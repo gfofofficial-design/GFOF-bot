@@ -23,7 +23,7 @@ function tgCall(path, data) {
       res.on('data', c => d += c);
       res.on('end', () => { try { resolve(JSON.parse(d)); } catch(e) { resolve({}); } });
     });
-    req.on('error', reject);
+    req.on('error', e => { console.error('TG error:', e.message); resolve({}); });
     req.write(body);
     req.end();
   });
@@ -74,9 +74,7 @@ const COMMANDS = {
   '/help': 'Commands:\n/start /about /buy /price /roadmap /website /links /help\n\nOr tag me: @GFOFAIBot what is $GFOF?\n$GFOF'
 };
 
-async function handleUpdate(update) {
-  if (!update.message) return;
-  const msg = update.message;
+async function processMessage(msg) {
   const chatId = msg.chat.id;
   const text = msg.text || '';
   const isGroup = msg.chat.type === 'group' || msg.chat.type === 'supergroup';
@@ -90,13 +88,16 @@ async function handleUpdate(update) {
 
   if (isGroup && !text.toLowerCase().includes('@gfofaibot')) return;
   const clean = text.replace(/@GFOFAIBot/gi, '').trim();
-  if (!clean) return;
+  if (!clean) {
+    await tgCall('/sendMessage', { chat_id: chatId, text: 'Federation AI online. Tag me with a question. $GFOF', reply_to_message_id: msg.message_id });
+    return;
+  }
+
+  await tgCall('/sendChatAction', { chat_id: chatId, action: 'typing' });
 
   if (!history[chatId]) history[chatId] = [];
   history[chatId].push({ role: 'user', content: clean });
   if (history[chatId].length > 8) history[chatId] = history[chatId].slice(-8);
-
-  await tgCall('/sendChatAction', { chat_id: chatId, action: 'typing' });
 
   try {
     const reply = await aiCall(history[chatId]);
@@ -110,41 +111,53 @@ async function handleUpdate(update) {
     console.error('AI error:', e.message);
     await tgCall('/sendMessage', {
       chat_id: chatId,
-      text: 'Federation comms disruption. Please try again. $GFOF',
+      text: 'Federation comms disruption. Please try again in a moment. $GFOF',
       reply_to_message_id: isGroup ? msg.message_id : undefined
     });
   }
 }
 
 function keepAlive() {
-  if (!APP_URL) return;
+  if (!APP_URL) { console.log('No APP_URL — keep-alive disabled'); return; }
   setInterval(() => {
-    const url = new URL(APP_URL + '/ping');
-    const req = https.request({ hostname: url.hostname, path: '/ping', method: 'GET' }, res => {
-      console.log('Keep-alive ping:', res.statusCode, new Date().toISOString());
-    });
-    req.on('error', e => console.log('Ping error:', e.message));
-    req.end();
+    try {
+      const url = new URL(APP_URL + '/ping');
+      const req = https.request({ hostname: url.hostname, path: '/ping', method: 'GET' }, res => {
+        console.log('Keep-alive:', res.statusCode, new Date().toISOString());
+      });
+      req.on('error', e => console.log('Ping error:', e.message));
+      req.end();
+    } catch(e) { console.log('Keep-alive error:', e.message); }
   }, 4 * 60 * 1000);
-  console.log('Keep-alive started');
+  console.log('Keep-alive started for', APP_URL);
 }
 
 const server = http.createServer((req, res) => {
   if (req.url === '/ping' || req.url === '/') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'online', bot: 'GFOF Federation AI', ticker: '$GFOF' }));
+    res.end(JSON.stringify({ status: 'online', bot: 'GFOF Federation AI', ticker: '$GFOF', uptime: Math.floor(process.uptime()) + 's' }));
     return;
   }
+
   if (req.method === 'POST' && req.url === '/webhook') {
     let body = '';
     req.on('data', c => body += c);
-    req.on('end', async () => {
-      res.writeHead(200);
+    req.on('end', () => {
+      // Respond to Telegram IMMEDIATELY before any processing
+      // This fixes the "Read timeout expired" error
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.end('OK');
-      try { await handleUpdate(JSON.parse(body)); } catch(e) { console.error('Error:', e.message); }
+      // Process message asynchronously after responding
+      try {
+        const update = JSON.parse(body);
+        if (update.message && update.message.text) {
+          processMessage(update.message).catch(e => console.error('Process error:', e.message));
+        }
+      } catch(e) { console.error('Parse error:', e.message); }
     });
     return;
   }
+
   res.writeHead(404);
   res.end('Not found');
 });
