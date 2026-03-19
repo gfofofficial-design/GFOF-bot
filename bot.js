@@ -101,7 +101,7 @@ Key facts about $GFOF:
 - Contract: 2oQmHWoTZRmRLregHKjBSGJy3ueX3iRNzimy2iZCmoon
 - Buy link: https://dexscreener.com/solana/2oQmHWoTZRmRLregHKjBSGJy3ueX3iRNzimy2iZCmoon
 - Website: galacticfederation.co
-- Telegram community: https://t.me/+-OApwM3RErkyYjQx
+- Telegram community: https://t.me/+-yivjWkSQZUzYWUx
 - Current stage: Store of value, community building phase
 - Roadmap: Store of value (now) → Community growth → DeFi lending protocol → Expanding universe
 - Philosophy: Community governed, transparent, user-first, no hype
@@ -235,7 +235,7 @@ async function handleCommand(message) {
     '/website': `🌐 Visit the official $GFOF website:\ngalacticfederation.co\n\nLive chart, whitepaper, mission, roadmap, and the Federation AI. $GFOF 🌌`,
     '/whitepaper': `📋 Read the official $GFOF Whitepaper:\ngalacticfederation.co\n\nCovers: mission, tokenomics, roadmap, governance, lending protocol vision.\n\nThe foundation is solid. $GFOF 🌌`,
     '/price': `📈 Check live $GFOF price and chart:\nhttps://dexscreener.com/solana/2oQmHWoTZRmRLregHKjBSGJy3ueX3iRNzimy2iZCmoon\n\nAlways do your own research. Not financial advice. $GFOF 🌌`,
-    '/links': `🌌 Official $GFOF Links\n\n🌐 Website: galacticfederation.co\n📈 Buy $GFOF: dexscreener.com/solana/2oQmHWoTZRmRLregHKjBSGJy3ueX3iRNzimy2iZCmoon\n✈️ Telegram: t.me/+-OApwM3RErkyYjQx\n🐦 X/Twitter: Search $GFOF\n📋 Whitepaper: galacticfederation.co\n\n$GFOF 🚀`,
+    '/links': `🌌 Official $GFOF Links\n\n🌐 Website: galacticfederation.co\n📈 Buy $GFOF: dexscreener.com/solana/2oQmHWoTZRmRLregHKjBSGJy3ueX3iRNzimy2iZCmoon\n✈️ Telegram: t.me/+-yivjWkSQZUzYWUx\n🐦 X/Twitter: Search $GFOF\n📋 Whitepaper: galacticfederation.co\n\n$GFOF 🚀`,
     '/help': `Federation AI Commands 🌌\n\n/start — Welcome message\n/about — About $GFOF\n/buy — How to buy $GFOF\n/price — Live price link\n/roadmap — Project roadmap\n/website — Official website\n/whitepaper — Read the whitepaper\n/links — All official links\n/help — This menu\n\nOr tag me with any question:\n@GFOFAIBot what is $GFOF?\n\n$GFOF 🚀`
   };
 
