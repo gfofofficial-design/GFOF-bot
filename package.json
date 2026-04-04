@@ -1,12 +1,8 @@
 {
-  "name": "gfof-federation-ai-bot",
-  "version": "1.0.0",
-  "description": "Official $GFOF Galactic Federation of Finance Telegram AI Bot",
+  "name": "gfof-buy-bot",
+  "version": "2.0.0",
+  "description": "$GFOF Buy Bot v2 for Telegram",
   "main": "bot.js",
-  "scripts": {
-    "start": "node bot.js"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  }
+  "scripts": { "start": "node bot.js" },
+  "engines": { "node": ">=14" }
 }
